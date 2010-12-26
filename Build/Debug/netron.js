@@ -107,19 +107,19 @@ CanvasRenderingContext2D.prototype.dashedLine = function(x1, y1, x2, y2)
 	}
 };
 
-CanvasRenderingContext2D.prototype.roundedRect = function(x, y, w, h, radius)
+CanvasRenderingContext2D.prototype.roundedRect = function(x, y, width, height, radius)
 {
-  context.beginPath();
-  context.moveTo(x + radius, y);
-  context.lineTo(x + width - radius, y);
-  context.quadraticCurveTo(x + width, y, x + width, y + radius);
-  context.lineTo(x + width, y + height - radius);
-  context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-  context.lineTo(x + radius, y + height);
-  context.quadraticCurveTo(x, y + height, x, y + height - radius);
-  context.lineTo(x, y + radius);
-  context.quadraticCurveTo(x, y, x + radius, y);
-  context.closePath();
+  this.beginPath();
+  this.moveTo(x + radius, y);
+  this.lineTo(x + width - radius, y);
+  this.quadraticCurveTo(x + width, y, x + width, y + radius);
+  this.lineTo(x + width, y + height - radius);
+  this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  this.lineTo(x + radius, y + height);
+  this.quadraticCurveTo(x, y + height, x, y + height - radius);
+  this.lineTo(x, y + radius);
+  this.quadraticCurveTo(x, y, x + radius, y);
+  this.closePath();
 };
 
 var Cursors = 
@@ -376,7 +376,7 @@ Element.prototype.getPageRectangle = function()
 	rectangle.x += canvas.offsetLeft;
 	rectangle.y += canvas.offsetTop;
 	return rectangle;
-}
+};
 
 Element.prototype.setRectangle = function(rectangle)
 {
@@ -505,10 +505,7 @@ Element.prototype.getConnectorPosition = function(connector)
 
 Element.prototype.setContent = function(content)
 {
-	this.owner.undoService.begin();
-	this.owner.undoService.add(new ContentChangedUndoUnit(this, content));
-	this.owner.undoService.commit();
-	this.owner.update();
+	this.owner.setElementContent(this, content);
 };
 
 Element.prototype.getContent = function()
@@ -694,57 +691,6 @@ Selection.prototype.getRectangle = function()
 	return r;
 };
 
-function UndoService()
-{
-	this.container = null;
-	this.stack = [];
-	this.position = 0;
-}
-
-UndoService.prototype.begin = function()
-{
-	this.container = new ContainerUndoUnit();
-};
-
-UndoService.prototype.cancel = function()
-{
-	this.container = null;
-};
-
-UndoService.prototype.commit = function()
-{
-	if (!this.container.isEmpty())
-	{
-		this.stack.splice(this.position, this.stack.length - this.position);
-		this.stack.push(this.container);
-		this.redo();
-	}
-	this.container = null;	
-};
-
-UndoService.prototype.add = function(undoUnit)
-{
-	this.container.add(undoUnit);
-};
-
-UndoService.prototype.undo = function()
-{
-	if (this.position !== 0)
-	{
-		this.position--;
-		this.stack[this.position].undo();
-	}
-};
-
-UndoService.prototype.redo = function()
-{
-	if ((this.stack.length !== 0) && (this.position < this.stack.length))
-	{
-		this.stack[this.position].redo();
-		this.position++;
-	}
-};
-
 function ContainerUndoUnit()
 {
 	this.undoUnits = [];
@@ -862,12 +808,12 @@ function ContentChangedUndoUnit(element, content)
 ContentChangedUndoUnit.prototype.undo = function()
 {
 	this.element.content = this.undoContent;
-}
+};
 
 ContentChangedUndoUnit.prototype.redo = function()
 {
 	this.element.content = this.redoContent;
-}
+};
 
 function TransformUndoUnit(element, undoRectangle, redoRectangle)
 {
@@ -954,6 +900,57 @@ SelectionUndoUnit.prototype.isEmpty = function()
 		}
 	}
 	return true;
+};
+
+function UndoService()
+{
+	this.container = null;
+	this.stack = [];
+	this.position = 0;
+}
+
+UndoService.prototype.begin = function()
+{
+	this.container = new ContainerUndoUnit();
+};
+
+UndoService.prototype.cancel = function()
+{
+	this.container = null;
+};
+
+UndoService.prototype.commit = function()
+{
+	if (!this.container.isEmpty())
+	{
+		this.stack.splice(this.position, this.stack.length - this.position);
+		this.stack.push(this.container);
+		this.redo();
+	}
+	this.container = null;	
+};
+
+UndoService.prototype.add = function(undoUnit)
+{
+	this.container.add(undoUnit);
+};
+
+UndoService.prototype.undo = function()
+{
+	if (this.position !== 0)
+	{
+		this.position--;
+		this.stack[this.position].undo();
+	}
+};
+
+UndoService.prototype.redo = function()
+{
+	if ((this.stack.length !== 0) && (this.position < this.stack.length))
+	{
+		this.stack[this.position].redo();
+		this.position++;
+	}
 };
 
 function Graph(element)
@@ -1466,14 +1463,12 @@ Graph.prototype.updateMousePosition = function(e)
 {
 	this.mousePosition = new Point(e.pageX, e.pageY);
 	var node = this.canvas;
-	while (node != null)
+	while (node !== null)
 	{
 		this.mousePosition.x -= node.offsetLeft;
 		this.mousePosition.y -= node.offsetTop;
 		node = node.offsetParent;
 	}
-	
-//	this.mousePosition = new Point(e.pageX - this.canvas.offsetLeft, e.pageY - this.canvas.offsetTop);
 };
 
 Graph.prototype.addElement = function(template, point, content)
@@ -1491,7 +1486,7 @@ Graph.prototype.createElement = function(template)
 	this.activeTemplate = template;
 	this.newElement = new Element(template, this.mousePosition);
 	this.canvas.focus();
-}
+};
 
 Graph.prototype.addConnection = function(connector1, connector2)
 {
@@ -1502,6 +1497,14 @@ Graph.prototype.addConnection = function(connector1, connector2)
 	connector2.invalidate();
 	connection.invalidate();
 	return connection;
+};
+
+Graph.prototype.setElementContent = function(element, content)
+{
+	this.owner.undoService.begin();
+	this.owner.undoService.add(new ContentChangedUndoUnit(element, content));
+	this.owner.undoService.commit();
+	this.owner.update();
 };
 
 Graph.prototype.update = function()
