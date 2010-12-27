@@ -125,8 +125,8 @@ CanvasRenderingContext2D.prototype.roundedRect = function(x, y, width, height, r
 var Cursors = 
 {
 	arrow: "default",
-	grip: "crosshair", 
-	cross: "crosshair", 
+	grip: "pointer", // "crosshair", 
+	cross: "pointer", // "crosshair",
 	move: "move", 
 	select: "pointer" 
 };
