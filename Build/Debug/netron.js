@@ -165,20 +165,45 @@ Connector.prototype.invalidate = function()
 {
 };
 
-Connector.prototype.paint = function(context)
+Connector.prototype.isValid = function(value)
+{
+	if (value === this)
+	{
+		return false;
+	}
+	var t1 = this.template.type.split(' ');
+	if (!t1.contains("[array]") && (this.connections.length == 1))
+	{
+		return false;
+	}
+	if (value instanceof Connector)
+	{	
+		var t2 = value.template.type.split(' ');
+		if ((t1[0] != t2[0]) ||
+		(this.owner == value.owner) || 
+			(t1.contains("[in]") && !t2.contains("[out]")) || 
+			(t1.contains("[out]") && !t2.contains("[in]")) || 
+			(!t2.contains("[array]") && (value.connections.length == 1)))
+		{
+			return false;
+		}
+	}
+	return true;
+};
+
+Connector.prototype.paint = function(context, other)
 {
 	var rectangle = this.getRectangle();
-
 	var strokeStyle = this.owner.owner.style.connectorBorder; 
 	var fillStyle = this.owner.owner.style.connector;
-	if (this.hover) // TODO || (this.owner.owner.newConnection !== null))
+	if (this.hover)
 	{
 		strokeStyle = this.owner.owner.style.connectorHoverBorder; 
 		fillStyle = this.owner.owner.style.connectorHover;
-		// if ((this.list) || (this.connections.Count != 1))
-		// {
-		//	fillColor = Color.FromArgb(0, 192, 0); // medium green
-		// }
+		if (!this.isValid(other))
+		{
+			fillStyle = "#f00";			
+		}
 	}
 
 	context.lineWidth = 1;
@@ -586,7 +611,11 @@ Connection.prototype.hitTest = function(rectangle)
 
 		if (r1.union(r2).contains(p))
 		{
-			if (p1.y < p2.y)
+			if ((p1.x == p2.x) || (p1.y == p2.y)) // straight line
+			{
+				return true;
+			}
+			else if (p1.y < p2.y)
 			{
 				var o1 = r1.x + (((r2.x - r1.x) * (p.y - (r1.y + r1.height))) / ((r2.y + r2.height) - (r1.y + r1.height)));
 				var u1 = (r1.x + r1.width) + ((((r2.x + r2.width) - (r1.x + r1.width)) * (p.y - r1.y)) / (r2.y - r1.y));
@@ -957,7 +986,7 @@ function Graph(element)
 	this.canvas = element;
 	this.canvas.focus();
 	this.context = this.canvas.getContext("2d");
-	this.style = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#f00" };
+	this.style = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#0c0" };
 	this.mousePosition = new Point(0, 0);
 	this.undoService = new UndoService();
 	this.elements = [];
@@ -1037,9 +1066,12 @@ Graph.prototype.mouseDown = function(e)
 				// start connection
 				if (this.activeObject instanceof Connector)
 				{
-					this.newConnection = new Connection(this.activeObject, null);
-					this.newConnection.toPoint = point;
-					this.activeObject.invalidate();
+					if (this.activeObject.isValid(null))
+					{
+						this.newConnection = new Connection(this.activeObject, null);
+						this.newConnection.toPoint = point;
+						this.activeObject.invalidate();
+					}
 				}
 				else
 				{
@@ -1107,7 +1139,7 @@ Graph.prototype.mouseUp = function(e)
 			this.newConnection.invalidate();
 			if ((this.activeObject !== null) && (this.activeObject instanceof Connector))
 			{
-				if (this.activeObject != this.newConnection.from)
+				if ((this.activeObject != this.newConnection.from) && (this.activeObject.isValid(this.newConnection.from)))
 				{
 					this.undoService.begin();
 					this.undoService.add(new InsertConnectionUndoUnit(this.newConnection, this.newConnection.from, this.activeObject));
@@ -1310,17 +1342,18 @@ Graph.prototype.keyUp = function(e)
 Graph.prototype.deleteSelection = function()
 {
 	var i, j, k;
+	var element;
 	
 	this.undoService.begin();
 
 	var deletedConnections = [];
 	for (i = 0; i < this.elements.length; i++)
 	{
-		var element = this.elements[i];
-		for (var j = 0; j < element.connectors.length; j++)
+		element = this.elements[i];
+		for (j = 0; j < element.connectors.length; j++)
 		{
 			var connector = element.connectors[j];
-			for (var k = 0; k < connector.connections.length; k++)
+			for (k = 0; k < connector.connections.length; k++)
 			{
 				var connection = connector.connections[k];
 				if ((element.selected || connection.selected) && (!deletedConnections.contains(connection)))
@@ -1334,7 +1367,7 @@ Graph.prototype.deleteSelection = function()
 	
 	for (i = 0; i < this.elements.length; i++)
 	{
-		var element = this.elements[i];
+		element = this.elements[i];
 		if (element.selected)
 		{
 			this.undoService.add(new DeleteElementUndoUnit(element));
@@ -1564,11 +1597,11 @@ Graph.prototype.update = function()
 
 			if ((element.hover) || (connector.hover) || hover)
 			{
-				connector.paint(this.context);
+				connector.paint(this.context, (this.newConnection !== null) ? this.newConnection.from : null);
 			}
-			else if (this.newConnection !== null) // TODO check type
+			else if ((this.newConnection !== null) && (connector.isValid(this.newConnection.from)))
 			{
-				connector.paint(this.context);
+				connector.paint(this.context, this.newConnection.from);
 			}
 		}
 	}
