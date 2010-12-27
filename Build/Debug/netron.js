@@ -194,12 +194,12 @@ Connector.prototype.isValid = function(value)
 Connector.prototype.paint = function(context, other)
 {
 	var rectangle = this.getRectangle();
-	var strokeStyle = this.owner.owner.style.connectorBorder; 
-	var fillStyle = this.owner.owner.style.connector;
+	var strokeStyle = this.owner.owner.theme.connectorBorder; 
+	var fillStyle = this.owner.owner.theme.connector;
 	if (this.hover)
 	{
-		strokeStyle = this.owner.owner.style.connectorHoverBorder; 
-		fillStyle = this.owner.owner.style.connectorHover;
+		strokeStyle = this.owner.owner.theme.connectorHoverBorder; 
+		fillStyle = this.owner.owner.theme.connectorHover;
 		if (!this.isValid(other))
 		{
 			fillStyle = "#f00";			
@@ -646,14 +646,14 @@ Connection.prototype.invalidate = function()
 
 Connection.prototype.paint = function(context)
 {
-	context.strokeStyle = this.from.owner.owner.style.connection;
+	context.strokeStyle = this.from.owner.owner.theme.connection;
 	context.lineWidth = (this.hover) ? 2 : 1;
 	this.paintLine(context, this.selected);
 };
 
 Connection.prototype.paintTrack = function(context)
 {
-	context.strokeStyle = this.from.owner.owner.style.connection;
+	context.strokeStyle = this.from.owner.owner.theme.connection;
 	context.lineWidth = 1;
 	this.paintLine(context, true);
 };
@@ -986,7 +986,7 @@ function Graph(element)
 	this.canvas = element;
 	this.canvas.focus();
 	this.context = this.canvas.getContext("2d");
-	this.style = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#0c0" };
+	this.theme = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#0c0" };
 	this.mousePosition = new Point(0, 0);
 	this.undoService = new UndoService();
 	this.elements = [];
@@ -1553,7 +1553,7 @@ Graph.prototype.update = function()
 	var i, j, k;
 	var element, connector, connection;
 	
-	this.canvas.style.background = this.style.background;
+	this.canvas.style.background = this.theme.background;
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	
 	var connections = [];
@@ -1620,7 +1620,7 @@ Graph.prototype.update = function()
 	
 	if (this.selection !== null)
 	{
-		this.context.strokeStyle = this.style.selection;
+		this.context.strokeStyle = this.theme.selection;
 		this.selection.paint(this.context);
 	}
 };
