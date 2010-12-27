@@ -169,12 +169,12 @@ Connector.prototype.paint = function(context)
 {
 	var rectangle = this.getRectangle();
 
-	var strokeStyle = "#ffffff";
-	var fillStyle = "#31456b"; // dark blue
+	var strokeStyle = this.owner.owner.style.connectorBorder; 
+	var fillStyle = this.owner.owner.style.connector;
 	if (this.hover) // TODO || (this.owner.owner.newConnection !== null))
 	{
-		strokeStyle = "#000000";
-		fillStyle = "#ff0000"; // red
+		strokeStyle = this.owner.owner.style.connectorHoverBorder; 
+		fillStyle = this.owner.owner.style.connectorHover;
 		// if ((this.list) || (this.connections.Count != 1))
 		// {
 		//	fillColor = Color.FromArgb(0, 192, 0); // medium green
@@ -537,11 +537,11 @@ Connection.prototype.remove = function()
 	this.invalidate();
 	if ((this.from !== null) && (this.from.connections.contains(this)))
 	{
-		this.from.connections.pop(this);
+		this.from.connections.remove(this);
 	}
 	if ((this.to !== null) && (this.to.connections.contains(this)))
 	{
-		this.to.connections.pop(this);
+		this.to.connections.remove(this);
 	}
 	this.from = null;
 	this.to = null;
@@ -617,14 +617,14 @@ Connection.prototype.invalidate = function()
 
 Connection.prototype.paint = function(context)
 {
-	context.strokeStyle = "#000000";
+	context.strokeStyle = this.from.owner.owner.style.connection;
 	context.lineWidth = (this.hover) ? 2 : 1;
 	this.paintLine(context, this.selected);
 };
 
 Connection.prototype.paintTrack = function(context)
 {
-	context.strokeStyle = "#000000";
+	context.strokeStyle = this.from.owner.owner.style.connection;
 	context.lineWidth = 1;
 	this.paintLine(context, true);
 };
@@ -662,7 +662,6 @@ function Selection(startPoint)
 Selection.prototype.paint = function(context)
 {
 	var r = this.getRectangle();
-	context.strokeStyle = "#000";
 	context.lineWidth = 1;
 	context.beginPath();
 	context.dashedLine(r.x - 0.5,           r.y - 0.5,            r.x - 0.5 + r.width, r.y - 0.5);
@@ -956,9 +955,9 @@ UndoService.prototype.redo = function()
 function Graph(element)
 {
 	this.canvas = element;
-	this.canvas.style.background = "#fff";
 	this.canvas.focus();
 	this.context = this.canvas.getContext("2d");
+	this.style = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#f00" };
 	this.mousePosition = new Point(0, 0);
 	this.undoService = new UndoService();
 	this.elements = [];
@@ -1310,30 +1309,38 @@ Graph.prototype.keyUp = function(e)
 
 Graph.prototype.deleteSelection = function()
 {
-	this.undoService.begin();
+	var i, j, k;
 	
-	for (var i = 0; i < this.elements.length; i++)
+	this.undoService.begin();
+
+	var deletedConnections = [];
+	for (i = 0; i < this.elements.length; i++)
 	{
 		var element = this.elements[i];
-		if (element.selected)
-		{
-			this.undoService.add(new DeleteElementUndoUnit(element));
-		}
-
 		for (var j = 0; j < element.connectors.length; j++)
 		{
 			var connector = element.connectors[j];
 			for (var k = 0; k < connector.connections.length; k++)
 			{
 				var connection = connector.connections[k];
-				if (element.selected || connection.selected)
+				if ((element.selected || connection.selected) && (!deletedConnections.contains(connection)))
 				{
 					this.undoService.add(new DeleteConnectionUndoUnit(connection));
+					deletedConnections.push(connection);
 				}
 			}
 		}
 	}
 	
+	for (i = 0; i < this.elements.length; i++)
+	{
+		var element = this.elements[i];
+		if (element.selected)
+		{
+			this.undoService.add(new DeleteElementUndoUnit(element));
+		}
+	}
+
 	this.undoService.commit();
 };
 
@@ -1513,6 +1520,7 @@ Graph.prototype.update = function()
 	var i, j, k;
 	var element, connector, connection;
 	
+	this.canvas.style.background = this.style.background;
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	
 	var connections = [];
@@ -1567,7 +1575,9 @@ Graph.prototype.update = function()
 	
 	if (this.newElement !== null)
 	{
+		this.context.save();
 		this.newElement.paint(this.context);
+		this.context.restore();
 	}
 	
 	if (this.newConnection !== null)
@@ -1577,6 +1587,7 @@ Graph.prototype.update = function()
 	
 	if (this.selection !== null)
 	{
+		this.context.strokeStyle = this.style.selection;
 		this.selection.paint(this.context);
 	}
 };
