@@ -39,7 +39,7 @@ function Point(x, y)
 	this.y = y;
 }
 
-function Rectangle(x, y, width, height)
+Rectangle = function(x, y, width, height)
 {
 	this.x = x;
 	this.y = y;
@@ -131,7 +131,7 @@ var Cursors =
 	select: "pointer" 
 };
 
-function Connector(owner, template)
+Connector = function(owner, template)
 {
 	this.owner = owner;
 	this.template = template;
@@ -234,7 +234,7 @@ Connector.prototype.paint = function(context, other)
 	}
 };
 
-function Tracker(rectangle, resizable)
+Tracker = function(rectangle, resizable)
 {
 	this.rectangle = new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 	this.resizable = resizable;
@@ -357,7 +357,7 @@ Tracker.prototype.paint = function(context)
 	}
 };
 
-function Element(template, point)
+Element = function(template, point)
 {
 	this.template = template;
 	this.rectangle = new Rectangle(point.x, point.y, template.defaultWidth, template.defaultHeight);
@@ -538,7 +538,7 @@ Element.prototype.getContent = function()
 	return this.content;
 };
 
-function Connection(from, to)
+Connection = function(from, to)
 {
 	this.from = from;
 	this.to = to;
@@ -682,7 +682,7 @@ Connection.prototype.paintLine = function(context, dashed)
 	}
 };
 
-function Selection(startPoint)
+Selection = function(startPoint)
 {
 	this.startPoint = startPoint;
 	this.currentPoint = startPoint;
@@ -719,7 +719,7 @@ Selection.prototype.getRectangle = function()
 	return r;
 };
 
-function ContainerUndoUnit()
+ContainerUndoUnit = function()
 {
 	this.undoUnits = [];
 }
@@ -760,7 +760,7 @@ ContainerUndoUnit.prototype.isEmpty = function()
 	return true;
 };
 
-function InsertElementUndoUnit(element, owner)
+InsertElementUndoUnit = function(element, owner)
 {
 	this.element = element;
 	this.owner = owner;
@@ -776,7 +776,7 @@ InsertElementUndoUnit.prototype.redo = function()
 	this.element.insertInto(this.owner);
 };
 
-function DeleteElementUndoUnit(element)
+DeleteElementUndoUnit = function(element)
 {
 	this.element = element;
 	this.owner = this.element.owner;
@@ -792,7 +792,7 @@ DeleteElementUndoUnit.prototype.redo = function()
 	this.element.remove();
 };
 
-function InsertConnectionUndoUnit(connection, from, to)
+InsertConnectionUndoUnit = function(connection, from, to)
 {
 	this.connection = connection;
 	this.from = from;
@@ -809,7 +809,7 @@ InsertConnectionUndoUnit.prototype.redo = function()
 	this.connection.insert(this.from, this.to);
 };
 
-function DeleteConnectionUndoUnit(connection)
+DeleteConnectionUndoUnit = function(connection)
 {
 	this.connection = connection;
 	this.from = connection.from;
@@ -826,7 +826,7 @@ DeleteConnectionUndoUnit.prototype.redo = function()
 	this.connection.remove();
 };
 
-function ContentChangedUndoUnit(element, content)
+ContentChangedUndoUnit = function(element, content)
 {
 	this.element = element;
 	this.undoContent = element.content;
@@ -843,7 +843,7 @@ ContentChangedUndoUnit.prototype.redo = function()
 	this.element.content = this.redoContent;
 };
 
-function TransformUndoUnit(element, undoRectangle, redoRectangle)
+TransformUndoUnit = function(element, undoRectangle, redoRectangle)
 {
 	this.element = element;
 	this.undoRectangle = new Rectangle(undoRectangle.x, undoRectangle.y, undoRectangle.width, undoRectangle.height);
@@ -860,7 +860,7 @@ TransformUndoUnit.prototype.redo = function()
 	this.element.setRectangle(this.redoRectangle);
 };
 
-function SelectionUndoUnit()
+SelectionUndoUnit = function()
 {
 	this.states = [];
 }
@@ -930,7 +930,7 @@ SelectionUndoUnit.prototype.isEmpty = function()
 	return true;
 };
 
-function UndoService()
+UndoService = function()
 {
 	this.container = null;
 	this.stack = [];
@@ -981,7 +981,7 @@ UndoService.prototype.redo = function()
 	}
 };
 
-function Graph(element)
+Graph = function(element)
 {
 	this.canvas = element;
 	this.canvas.focus();
