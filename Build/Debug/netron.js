@@ -33,19 +33,19 @@ Array.prototype.contains = function(obj)
 	return false;
 };
 
-function Point(x, y)
+var Point = function(x, y)
 {
 	this.x = x;
 	this.y = y;
 }
 
-Rectangle = function(x, y, width, height)
+var Rectangle = function(x, y, width, height)
 {
 	this.x = x;
 	this.y = y;
 	this.width = width;
 	this.height = height;
-}
+};
 
 Rectangle.prototype.contains = function(point)
 {
@@ -131,13 +131,13 @@ var Cursors =
 	select: "pointer" 
 };
 
-Connector = function(owner, template)
+var Connector = function(owner, template)
 {
 	this.owner = owner;
 	this.template = template;
 	this.connections = [];
 	this.hover = false;
-}
+};
 
 Connector.prototype.getCursor = function(point)
 {
@@ -234,12 +234,12 @@ Connector.prototype.paint = function(context, other)
 	}
 };
 
-Tracker = function(rectangle, resizable)
+var Tracker = function(rectangle, resizable)
 {
 	this.rectangle = new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
 	this.resizable = resizable;
 	this.track = false;
-}
+};
 
 Tracker.prototype.hitTest = function(point)
 {
@@ -357,7 +357,7 @@ Tracker.prototype.paint = function(context)
 	}
 };
 
-Element = function(template, point)
+var Element = function(template, point)
 {
 	this.template = template;
 	this.rectangle = new Rectangle(point.x, point.y, template.defaultWidth, template.defaultHeight);
@@ -372,7 +372,7 @@ Element = function(template, point)
 		var connectorTemplate = template.connectorTemplates[i];
 		this.connectors.push(new Connector(this, connectorTemplate));
 	}	
-}
+};
 
 Element.prototype.select = function()
 {
@@ -538,12 +538,12 @@ Element.prototype.getContent = function()
 	return this.content;
 };
 
-Connection = function(from, to)
+var Connection = function(from, to)
 {
 	this.from = from;
 	this.to = to;
 	this.toPoint = null;
-}
+};
 
 Connection.prototype.select = function()
 {
@@ -682,11 +682,11 @@ Connection.prototype.paintLine = function(context, dashed)
 	}
 };
 
-Selection = function(startPoint)
+var Selection = function(startPoint)
 {
 	this.startPoint = startPoint;
 	this.currentPoint = startPoint;
-}
+};
 
 Selection.prototype.paint = function(context)
 {
@@ -719,10 +719,10 @@ Selection.prototype.getRectangle = function()
 	return r;
 };
 
-ContainerUndoUnit = function()
+var ContainerUndoUnit = function()
 {
 	this.undoUnits = [];
-}
+};
 
 ContainerUndoUnit.prototype.add = function(undoUnit)
 {
@@ -760,11 +760,11 @@ ContainerUndoUnit.prototype.isEmpty = function()
 	return true;
 };
 
-InsertElementUndoUnit = function(element, owner)
+var InsertElementUndoUnit = function(element, owner)
 {
 	this.element = element;
 	this.owner = owner;
-}
+};
 
 InsertElementUndoUnit.prototype.undo = function()
 {
@@ -776,11 +776,11 @@ InsertElementUndoUnit.prototype.redo = function()
 	this.element.insertInto(this.owner);
 };
 
-DeleteElementUndoUnit = function(element)
+var DeleteElementUndoUnit = function(element)
 {
 	this.element = element;
 	this.owner = this.element.owner;
-}
+};
 
 DeleteElementUndoUnit.prototype.undo = function()
 {
@@ -792,12 +792,12 @@ DeleteElementUndoUnit.prototype.redo = function()
 	this.element.remove();
 };
 
-InsertConnectionUndoUnit = function(connection, from, to)
+var InsertConnectionUndoUnit = function(connection, from, to)
 {
 	this.connection = connection;
 	this.from = from;
 	this.to = to;
-}
+};
 
 InsertConnectionUndoUnit.prototype.undo = function()
 {
@@ -809,12 +809,12 @@ InsertConnectionUndoUnit.prototype.redo = function()
 	this.connection.insert(this.from, this.to);
 };
 
-DeleteConnectionUndoUnit = function(connection)
+var DeleteConnectionUndoUnit = function(connection)
 {
 	this.connection = connection;
 	this.from = connection.from;
 	this.to = connection.to;
-}
+};
 
 DeleteConnectionUndoUnit.prototype.undo = function()
 {
@@ -826,12 +826,12 @@ DeleteConnectionUndoUnit.prototype.redo = function()
 	this.connection.remove();
 };
 
-ContentChangedUndoUnit = function(element, content)
+var ContentChangedUndoUnit = function(element, content)
 {
 	this.element = element;
 	this.undoContent = element.content;
 	this.redoContent = content;
-}
+};
 
 ContentChangedUndoUnit.prototype.undo = function()
 {
@@ -843,12 +843,12 @@ ContentChangedUndoUnit.prototype.redo = function()
 	this.element.content = this.redoContent;
 };
 
-TransformUndoUnit = function(element, undoRectangle, redoRectangle)
+var TransformUndoUnit = function(element, undoRectangle, redoRectangle)
 {
 	this.element = element;
 	this.undoRectangle = new Rectangle(undoRectangle.x, undoRectangle.y, undoRectangle.width, undoRectangle.height);
 	this.redoRectangle = new Rectangle(redoRectangle.x, redoRectangle.y, redoRectangle.width, redoRectangle.height);
-}
+};
 
 TransformUndoUnit.prototype.undo = function()
 {
@@ -860,10 +860,10 @@ TransformUndoUnit.prototype.redo = function()
 	this.element.setRectangle(this.redoRectangle);
 };
 
-SelectionUndoUnit = function()
+var SelectionUndoUnit = function()
 {
 	this.states = [];
-}
+};
 
 SelectionUndoUnit.prototype.undo = function()
 {
@@ -930,12 +930,12 @@ SelectionUndoUnit.prototype.isEmpty = function()
 	return true;
 };
 
-UndoService = function()
+var UndoService = function()
 {
 	this.container = null;
 	this.stack = [];
 	this.position = 0;
-}
+};
 
 UndoService.prototype.begin = function()
 {
@@ -981,7 +981,7 @@ UndoService.prototype.redo = function()
 	}
 };
 
-Graph = function(element)
+var Graph = function(element)
 {
 	this.canvas = element;
 	this.canvas.focus();
@@ -1022,7 +1022,7 @@ Graph = function(element)
 	
 	this.isWebKit = typeof navigator.userAgent.split("WebKit/")[1] !== "undefined";
 	this.isMozilla = navigator.appVersion.indexOf('Gecko/') >= 0 || ((navigator.userAgent.indexOf("Gecko") >= 0) && !this.isWebKit && (typeof navigator.appVersion !== "undefined"));
-}
+};
 
 Graph.prototype.dispose = function()
 {
