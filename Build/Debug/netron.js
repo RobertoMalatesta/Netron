@@ -104,16 +104,14 @@ var Netron;
                 if(r1.union(r2).contains(p)) {
                     if((p1.x == p2.x) || (p1.y == p2.y)) {
                         return true;
+                    } else if(p1.y < p2.y) {
+                        var o1 = r1.x + (((r2.x - r1.x) * (p.y - (r1.y + r1.height))) / ((r2.y + r2.height) - (r1.y + r1.height)));
+                        var u1 = (r1.x + r1.width) + ((((r2.x + r2.width) - (r1.x + r1.width)) * (p.y - r1.y)) / (r2.y - r1.y));
+                        return ((p.x > o1) && (p.x < u1));
                     } else {
-                        if(p1.y < p2.y) {
-                            var o1 = r1.x + (((r2.x - r1.x) * (p.y - (r1.y + r1.height))) / ((r2.y + r2.height) - (r1.y + r1.height)));
-                            var u1 = (r1.x + r1.width) + ((((r2.x + r2.width) - (r1.x + r1.width)) * (p.y - r1.y)) / (r2.y - r1.y));
-                            return ((p.x > o1) && (p.x < u1));
-                        } else {
-                            var o2 = r1.x + (((r2.x - r1.x) * (p.y - r1.y)) / (r2.y - r1.y));
-                            var u2 = (r1.x + r1.width) + ((((r2.x + r2.width) - (r1.x + r1.width)) * (p.y - (r1.y + r1.height))) / ((r2.y + r2.height) - (r1.y + r1.height)));
-                            return ((p.x > o2) && (p.x < u2));
-                        }
+                        var o2 = r1.x + (((r2.x - r1.x) * (p.y - r1.y)) / (r2.y - r1.y));
+                        var u2 = (r1.x + r1.width) + ((((r2.x + r2.width) - (r1.x + r1.width)) * (p.y - (r1.y + r1.height))) / ((r2.y + r2.height) - (r1.y + r1.height)));
+                        return ((p.x > o2) && (p.x < u2));
                     }
                 }
             }
@@ -158,7 +156,6 @@ var Netron;
     })();
     Netron.Connection = Connection;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Connector = (function () {
@@ -276,7 +273,6 @@ var Netron;
     })();
     Netron.Connector = Connector;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var ContainerUndoUnit = (function () {
@@ -314,7 +310,6 @@ var Netron;
     })();
     Netron.ContainerUndoUnit = ContainerUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var ContentChangedUndoUnit = (function () {
@@ -340,7 +335,6 @@ var Netron;
     })();
     Netron.ContentChangedUndoUnit = ContentChangedUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Cursors = (function () {
@@ -355,7 +349,6 @@ var Netron;
     })();
     Netron.Cursors = Cursors;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var DeleteConnectionUndoUnit = (function () {
@@ -381,7 +374,6 @@ var Netron;
     })();
     Netron.DeleteConnectionUndoUnit = DeleteConnectionUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var DeleteElementUndoUnit = (function () {
@@ -406,7 +398,6 @@ var Netron;
     })();
     Netron.DeleteElementUndoUnit = DeleteElementUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Element = (function () {
@@ -526,7 +517,7 @@ var Netron;
                 }
                 if((this._tracker !== null) && (this._tracker.track)) {
                     var h = this._tracker.hitTest(rectangle.topLeft);
-                    if((h.x >= -1) && (h.x <= 1) && (h.y >= -1) && (h.y <= 1)) {
+                    if((h.x >= -1) && (h.x <= +1) && (h.y >= -1) && (h.y <= +1)) {
                         return true;
                     }
                 }
@@ -584,7 +575,6 @@ var Netron;
     })();
     Netron.Element = Element;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Graph = (function () {
@@ -831,14 +821,12 @@ var Netron;
                             selectionUndoUnit.select(selectable);
                             this._undoService.add(selectionUndoUnit);
                             this._undoService.commit();
-                        } else {
-                            if(this._shiftKey) {
-                                this._undoService.begin();
-                                var deselectUndoUnit = new Netron.SelectionUndoUnit();
-                                deselectUndoUnit.deselect(selectable);
-                                this._undoService.add(deselectUndoUnit);
-                                this._undoService.commit();
-                            }
+                        } else if(this._shiftKey) {
+                            this._undoService.begin();
+                            var deselectUndoUnit = new Netron.SelectionUndoUnit();
+                            deselectUndoUnit.deselect(selectable);
+                            this._undoService.add(deselectUndoUnit);
+                            this._undoService.commit();
                         }
                         var hit = new Netron.Point(0, 0);
                         if(this._activeObject instanceof Netron.Element) {
@@ -1204,10 +1192,8 @@ var Netron;
                     }
                     if((element.hover) || (connector.hover) || hover) {
                         connector.paint(this._context, (this._newConnection !== null) ? this._newConnection.from : null);
-                    } else {
-                        if((this._newConnection !== null) && (connector.isAssignable(this._newConnection.from))) {
-                            connector.paint(this._context, this._newConnection.from);
-                        }
+                    } else if((this._newConnection !== null) && (connector.isAssignable(this._newConnection.from))) {
+                        connector.paint(this._context, this._newConnection.from);
                     }
                 }
             }
@@ -1228,7 +1214,6 @@ var Netron;
     })();
     Netron.Graph = Graph;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var InsertConnectionUndoUnit = (function () {
@@ -1254,7 +1239,6 @@ var Netron;
     })();
     Netron.InsertConnectionUndoUnit = InsertConnectionUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var InsertElementUndoUnit = (function () {
@@ -1279,7 +1263,6 @@ var Netron;
     })();
     Netron.InsertElementUndoUnit = InsertElementUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var LineHelper = (function () {
@@ -1306,12 +1289,11 @@ var Netron;
             } else {
                 context.lineTo(x2, y2);
             }
-        }
+        };
         return LineHelper;
     })();
     Netron.LineHelper = LineHelper;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Point = (function () {
@@ -1323,7 +1305,6 @@ var Netron;
     })();
     Netron.Point = Point;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Rectangle = (function () {
@@ -1363,7 +1344,6 @@ var Netron;
     })();
     Netron.Rectangle = Rectangle;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Selection = (function () {
@@ -1403,7 +1383,6 @@ var Netron;
     })();
     Netron.Selection = Selection;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var SelectionUndoUnit = (function () {
@@ -1455,7 +1434,6 @@ var Netron;
     })();
     Netron.SelectionUndoUnit = SelectionUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var Tracker = (function () {
@@ -1473,8 +1451,8 @@ var Netron;
         });
         Tracker.prototype.hitTest = function (point) {
             if(this._resizable) {
-                for(var x = -1; x <= 1; x++) {
-                    for(var y = -1; y <= 1; y++) {
+                for(var x = -1; x <= +1; x++) {
+                    for(var y = -1; y <= +1; y++) {
                         if((x !== 0) || (y !== 0)) {
                             var hit = new Netron.Point(x, y);
                             if(this.getGripRectangle(hit).contains(point)) {
@@ -1516,26 +1494,26 @@ var Netron;
             if((hit.x === 0) && (hit.y === 0)) {
                 return (this._track) ? Netron.Cursors.move : Netron.Cursors.select;
             }
-            if((hit.x >= -1) && (hit.x <= 1) && (hit.y >= -1) && (hit.y <= 1) && this._resizable) {
+            if((hit.x >= -1) && (hit.x <= +1) && (hit.y >= -1) && (hit.y <= +1) && this._resizable) {
                 if(hit.x === -1 && hit.y === -1) {
                     return "nw-resize";
                 }
-                if(hit.x === 1 && hit.y === 1) {
+                if(hit.x === +1 && hit.y === +1) {
                     return "se-resize";
                 }
-                if(hit.x === -1 && hit.y === 1) {
+                if(hit.x === -1 && hit.y === +1) {
                     return "sw-resize";
                 }
-                if(hit.x === 1 && hit.y === -1) {
+                if(hit.x === +1 && hit.y === -1) {
                     return "ne-resize";
                 }
                 if(hit.x === 0 && hit.y === -1) {
                     return "n-resize";
                 }
-                if(hit.x === 0 && hit.y === 1) {
+                if(hit.x === 0 && hit.y === +1) {
                     return "s-resize";
                 }
-                if(hit.x === 1 && hit.y === 0) {
+                if(hit.x === +1 && hit.y === 0) {
                     return "e-resize";
                 }
                 if(hit.x === -1 && hit.y === 0) {
@@ -1545,7 +1523,7 @@ var Netron;
             return null;
         };
         Tracker.prototype.start = function (point, handle) {
-            if((handle.x >= -1) && (handle.x <= 1) && (handle.y >= -1) && (handle.y <= 1)) {
+            if((handle.x >= -1) && (handle.x <= +1) && (handle.y >= -1) && (handle.y <= +1)) {
                 this._handle = handle;
                 this._currentPoint = point;
                 this._track = true;
@@ -1571,10 +1549,10 @@ var Netron;
             if((h.y == -1) || ((h.x === 0) && (h.y === 0))) {
                 a.y = point.y - this._currentPoint.y;
             }
-            if((h.x == 1) || ((h.x === 0) && (h.y === 0))) {
+            if((h.x == +1) || ((h.x === 0) && (h.y === 0))) {
                 b.x = point.x - this._currentPoint.x;
             }
-            if((h.y == 1) || ((h.x === 0) && (h.y === 0))) {
+            if((h.y == +1) || ((h.x === 0) && (h.y === 0))) {
                 b.y = point.y - this._currentPoint.y;
             }
             var tl = new Netron.Point(this._rectangle.x, this._rectangle.y);
@@ -1594,8 +1572,8 @@ var Netron;
         };
         Tracker.prototype.paint = function (context) {
             if(this._resizable) {
-                for(var x = -1; x <= 1; x++) {
-                    for(var y = -1; y <= 1; y++) {
+                for(var x = -1; x <= +1; x++) {
+                    for(var y = -1; y <= +1; y++) {
                         if((x !== 0) || (y !== 0)) {
                             var rectangle = this.getGripRectangle(new Netron.Point(x, y));
                             context.fillStyle = "#ffffff";
@@ -1612,7 +1590,6 @@ var Netron;
     })();
     Netron.Tracker = Tracker;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var TransformUndoUnit = (function () {
@@ -1638,7 +1615,6 @@ var Netron;
     })();
     Netron.TransformUndoUnit = TransformUndoUnit;    
 })(Netron || (Netron = {}));
-
 var Netron;
 (function (Netron) {
     var UndoService = (function () {
@@ -1680,4 +1656,3 @@ var Netron;
     })();
     Netron.UndoService = UndoService;    
 })(Netron || (Netron = {}));
-
