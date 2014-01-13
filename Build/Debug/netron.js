@@ -1,3 +1,4 @@
+
 // }
 Array.prototype.remove = function (obj) {
     var i = this.length;
@@ -106,6 +107,7 @@ var Netron;
 
                 var p = rectangle.topLeft;
 
+                // p1 must be the leftmost point
                 if (p1.x > p2.x) {
                     var temp = p2;
                     p2 = p1;
@@ -822,6 +824,7 @@ var Netron;
             this.updateMousePosition(e);
 
             if (e.button === 0) {
+                // alt+click allows fast creation of element using the active template
                 if ((this._newElement === null) && (e.altKey)) {
                     this.createElement(this._activeTemplate);
                 }
@@ -901,6 +904,7 @@ var Netron;
                     // start selection
                     this._selection = new Netron.Selection(point);
                 } else {
+                    // start connection
                     if ((this._activeObject instanceof Netron.Connector) && (!this._shiftKey)) {
                         var connector = this._activeObject;
                         if (connector.isAssignable(null)) {
@@ -1062,56 +1066,9 @@ var Netron;
                 if (typeof this._keyCodeTable === "undefined") {
                     this._keyCodeTable = [];
                     var charCodeTable = {
-                        32: ' ',
-                        48: '0',
-                        49: '1',
-                        50: '2',
-                        51: '3',
-                        52: '4',
-                        53: '5',
-                        54: '6',
-                        55: '7',
-                        56: '8',
-                        57: '9',
-                        59: ';',
-                        61: '=',
-                        65: 'a',
-                        66: 'b',
-                        67: 'c',
-                        68: 'd',
-                        69: 'e',
-                        70: 'f',
-                        71: 'g',
-                        72: 'h',
-                        73: 'i',
-                        74: 'j',
-                        75: 'k',
-                        76: 'l',
-                        77: 'm',
-                        78: 'n',
-                        79: 'o',
-                        80: 'p',
-                        81: 'q',
-                        82: 'r',
-                        83: 's',
-                        84: 't',
-                        85: 'u',
-                        86: 'v',
-                        87: 'w',
-                        88: 'x',
-                        89: 'y',
-                        90: 'z',
-                        107: '+',
-                        109: '-',
-                        110: '.',
-                        188: ',',
-                        190: '.',
-                        191: '/',
-                        192: '`',
-                        219: '[',
-                        220: '\\',
-                        221: ']',
-                        222: '\"'
+                        32: ' ', 48: '0', 49: '1', 50: '2', 51: '3', 52: '4', 53: '5', 54: '6', 55: '7', 56: '8', 57: '9', 59: ';', 61: '=',
+                        65: 'a', 66: 'b', 67: 'c', 68: 'd', 69: 'e', 70: 'f', 71: 'g', 72: 'h', 73: 'i', 74: 'j', 75: 'k', 76: 'l', 77: 'm', 78: 'n', 79: 'o', 80: 'p', 81: 'q', 82: 'r', 83: 's', 84: 't', 85: 'u', 86: 'v', 87: 'w', 88: 'x', 89: 'y', 90: 'z',
+                        107: '+', 109: '-', 110: '.', 188: ',', 190: '.', 191: '/', 192: '`', 219: '[', 220: '\\', 221: ']', 222: '\"'
                     };
 
                     for (var keyCode in charCodeTable) {
@@ -1628,6 +1585,7 @@ var Netron;
         });
 
         Tracker.prototype.hitTest = function (point) {
+            // (0, 0) element, (-1, -1) top-left, (+1, +1) bottom-right
             if (this._resizable) {
                 for (var x = -1; x <= +1; x++) {
                     for (var y = -1; y <= +1; y++) {
