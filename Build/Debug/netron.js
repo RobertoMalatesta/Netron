@@ -1,5 +1,3 @@
-
-// }
 Array.prototype.remove = function (obj) {
     var i = this.length;
     while (i--) {
@@ -1809,4 +1807,3 @@ var Netron;
     })();
     Netron.UndoService = UndoService;
 })(Netron || (Netron = {}));
-//# sourceMappingURL=netron.js.map
