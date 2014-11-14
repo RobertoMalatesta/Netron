@@ -6,7 +6,6 @@ Array.prototype.remove = function (obj) {
         }
     }
 };
-
 Array.prototype.contains = function (obj) {
     var i = this.length;
     while (i--) {
@@ -31,7 +30,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Connection.prototype, "to", {
             get: function () {
                 return this._to;
@@ -39,7 +37,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Connection.prototype, "selected", {
             get: function () {
                 return this._selected;
@@ -51,8 +48,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(Connection.prototype, "hover", {
             get: function () {
                 return this._hover;
@@ -63,12 +58,9 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
-
         Connection.prototype.updateToPoint = function (toPoint) {
             this._toPoint = toPoint;
         };
-
         Connection.prototype.remove = function () {
             this.invalidate();
             if ((this._from !== null) && (this._from.connections.contains(this))) {
@@ -80,7 +72,6 @@ var Netron;
             this._from = null;
             this._to = null;
         };
-
         Connection.prototype.insert = function (from, to) {
             this._from = from;
             this._to = to;
@@ -90,11 +81,9 @@ var Netron;
             this._to.invalidate();
             this.invalidate();
         };
-
         Connection.prototype.getCursor = function (point) {
             return Netron.Cursors.select;
         };
-
         Connection.prototype.hitTest = function (rectangle) {
             if ((this.from !== null) && (this.to !== null)) {
                 var p1 = this.from.element.getConnectorPosition(this.from);
@@ -102,29 +91,27 @@ var Netron;
                 if ((rectangle.width !== 0) || (rectangle.height !== 0)) {
                     return (rectangle.contains(p1) && rectangle.contains(p2));
                 }
-
                 var p = rectangle.topLeft;
-
                 // p1 must be the leftmost point
                 if (p1.x > p2.x) {
                     var temp = p2;
                     p2 = p1;
                     p1 = temp;
                 }
-
                 var r1 = new Netron.Rectangle(p1.x, p1.y, 0, 0);
                 var r2 = new Netron.Rectangle(p2.x, p2.y, 0, 0);
                 r1.inflate(3, 3);
                 r2.inflate(3, 3);
-
                 if (r1.union(r2).contains(p)) {
                     if ((p1.x == p2.x) || (p1.y == p2.y)) {
                         return true;
-                    } else if (p1.y < p2.y) {
+                    }
+                    else if (p1.y < p2.y) {
                         var o1 = r1.x + (((r2.x - r1.x) * (p.y - (r1.y + r1.height))) / ((r2.y + r2.height) - (r1.y + r1.height)));
                         var u1 = (r1.x + r1.width) + ((((r2.x + r2.width) - (r1.x + r1.width)) * (p.y - r1.y)) / (r2.y - r1.y));
                         return ((p.x > o1) && (p.x < u1));
-                    } else {
+                    }
+                    else {
                         var o2 = r1.x + (((r2.x - r1.x) * (p.y - r1.y)) / (r2.y - r1.y));
                         var u2 = (r1.x + r1.width) + ((((r2.x + r2.width) - (r1.x + r1.width)) * (p.y - (r1.y + r1.height))) / ((r2.y + r2.height) - (r1.y + r1.height)));
                         return ((p.x > o2) && (p.x < u2));
@@ -133,7 +120,6 @@ var Netron;
             }
             return false;
         };
-
         Connection.prototype.invalidate = function () {
             if (this._from !== null) {
                 this._from.invalidate();
@@ -142,19 +128,16 @@ var Netron;
                 this._to.invalidate();
             }
         };
-
         Connection.prototype.paint = function (context) {
             context.strokeStyle = this._from.element.graph.theme.connection;
             context.lineWidth = (this._hover) ? 2 : 1;
             this.paintLine(context, this._selected);
         };
-
         Connection.prototype.paintTrack = function (context) {
             context.strokeStyle = this.from.element.graph.theme.connection;
             context.lineWidth = 1;
             this.paintLine(context, true);
         };
-
         Connection.prototype.paintLine = function (context, dashed) {
             if (this._from !== null) {
                 var start = this._from.element.getConnectorPosition(this.from);
@@ -163,7 +146,8 @@ var Netron;
                     context.beginPath();
                     if (dashed) {
                         Netron.LineHelper.dashedLine(context, start.x, start.y, end.x, end.y);
-                    } else {
+                    }
+                    else {
                         context.moveTo(start.x - 0.5, start.y - 0.5);
                         context.lineTo(end.x - 0.5, end.y - 0.5);
                     }
@@ -191,7 +175,6 @@ var Netron;
             rectangle.inflate(3, 3);
             return rectangle;
         };
-
         Object.defineProperty(Connector.prototype, "element", {
             get: function () {
                 return this._element;
@@ -199,7 +182,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Connector.prototype, "template", {
             get: function () {
                 return this._template;
@@ -207,7 +189,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Connector.prototype, "connections", {
             get: function () {
                 return this._connections;
@@ -215,7 +196,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Connector.prototype, "hover", {
             get: function () {
                 return this._hover;
@@ -226,42 +206,33 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
-
         Connector.prototype.getCursor = function (point) {
             return Netron.Cursors.grip;
         };
-
         Connector.prototype.hitTest = function (rectangle) {
             if ((rectangle.width === 0) && (rectangle.height === 0)) {
                 return this.getRectangle().contains(rectangle.topLeft);
             }
             return rectangle.contains(this.getRectangle().topLeft);
         };
-
         Connector.prototype.invalidate = function () {
         };
-
         Connector.prototype.isAssignable = function (connector) {
             if (connector === this) {
                 return false;
             }
-
             var t1 = this._template.type.split(' ');
             if (!t1.contains("[array]") && (this._connections.length == 1)) {
                 return false;
             }
-
             if (connector instanceof Connector) {
                 var t2 = connector._template.type.split(' ');
                 if ((t1[0] != t2[0]) || (this._element == connector.element) || (t1.contains("[in]") && !t2.contains("[out]")) || (t1.contains("[out]") && !t2.contains("[in]")) || (!t2.contains("[array]") && (connector.connections.length == 1))) {
                     return false;
                 }
             }
-
             return true;
         };
-
         Connector.prototype.paint = function (context, other) {
             var rectangle = this.getRectangle();
             var strokeStyle = this._element.graph.theme.connectorBorder;
@@ -273,14 +244,12 @@ var Netron;
                     fillStyle = "#f00";
                 }
             }
-
             context.lineWidth = 1;
             context.strokeStyle = strokeStyle;
             context.lineCap = "butt";
             context.fillStyle = fillStyle;
             context.fillRect(rectangle.x - 0.5, rectangle.y - 0.5, rectangle.width, rectangle.height);
             context.strokeRect(rectangle.x - 0.5, rectangle.y - 0.5, rectangle.width, rectangle.height);
-
             if (this._hover) {
                 // Tooltip
                 var text = ("description" in this._template) ? this._template.description : this._template.name;
@@ -314,19 +283,16 @@ var Netron;
         ContainerUndoUnit.prototype.add = function (undoUnit) {
             this._undoUnits.push(undoUnit);
         };
-
         ContainerUndoUnit.prototype.undo = function () {
             for (var i = 0; i < this._undoUnits.length; i++) {
                 this._undoUnits[i].undo();
             }
         };
-
         ContainerUndoUnit.prototype.redo = function () {
             for (var i = 0; i < this._undoUnits.length; i++) {
                 this._undoUnits[i].redo();
             }
         };
-
         Object.defineProperty(ContainerUndoUnit.prototype, "isEmpty", {
             get: function () {
                 if (this._undoUnits.length > 0) {
@@ -356,11 +322,9 @@ var Netron;
         ContentChangedUndoUnit.prototype.undo = function () {
             this._element.content = this._undoContent;
         };
-
         ContentChangedUndoUnit.prototype.redo = function () {
             this._element.content = this._redoContent;
         };
-
         Object.defineProperty(ContentChangedUndoUnit.prototype, "isEmpty", {
             get: function () {
                 return false;
@@ -378,8 +342,8 @@ var Netron;
         function Cursors() {
         }
         Cursors.arrow = "default";
-        Cursors.grip = "pointer";
-        Cursors.cross = "pointer";
+        Cursors.grip = "pointer"; // "crosshair", 
+        Cursors.cross = "pointer"; // "crosshair",
         Cursors.add = "pointer";
         Cursors.move = "move";
         Cursors.select = "pointer";
@@ -398,11 +362,9 @@ var Netron;
         DeleteConnectionUndoUnit.prototype.undo = function () {
             this._connection.insert(this._from, this._to);
         };
-
         DeleteConnectionUndoUnit.prototype.redo = function () {
             this._connection.remove();
         };
-
         Object.defineProperty(DeleteConnectionUndoUnit.prototype, "isEmpty", {
             get: function () {
                 return false;
@@ -424,11 +386,9 @@ var Netron;
         DeleteElementUndoUnit.prototype.undo = function () {
             this._element.insertInto(this._graph);
         };
-
         DeleteElementUndoUnit.prototype.redo = function () {
             this._element.remove();
         };
-
         Object.defineProperty(DeleteElementUndoUnit.prototype, "isEmpty", {
             get: function () {
                 return false;
@@ -452,7 +412,6 @@ var Netron;
             this._template = template;
             this._content = template.defaultContent;
             this._rectangle = new Netron.Rectangle(point.x, point.y, template.defaultWidth, template.defaultHeight);
-
             for (var i = 0; i < template.connectorTemplates.length; i++) {
                 var connectorTemplate = template.connectorTemplates[i];
                 this._connectors.push(new Netron.Connector(this, connectorTemplate));
@@ -473,8 +432,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(Element.prototype, "template", {
             get: function () {
                 return this._template;
@@ -482,7 +439,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Element.prototype, "graph", {
             get: function () {
                 return this._graph;
@@ -490,7 +446,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Element.prototype, "connectors", {
             get: function () {
                 return this._connectors;
@@ -498,7 +453,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Element.prototype, "tracker", {
             get: function () {
                 return this._tracker;
@@ -506,18 +460,17 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Object.defineProperty(Element.prototype, "selected", {
             get: function () {
                 return this._selected;
             },
             set: function (value) {
                 this._selected = value;
-
                 if (this._selected) {
                     this._tracker = new Netron.Tracker(this._rectangle, ("resizable" in this._template) ? this._template.resizable : false);
                     this.invalidate();
-                } else {
+                }
+                else {
                     this.invalidate();
                     this._tracker = null;
                 }
@@ -525,8 +478,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(Element.prototype, "hover", {
             get: function () {
                 return this._hover;
@@ -537,66 +488,51 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
-
         Element.prototype.paint = function (context) {
             this._template.paint(this, context);
-
             if (this._selected) {
                 this._tracker.paint(context);
             }
         };
-
         Element.prototype.invalidate = function () {
         };
-
         Element.prototype.insertInto = function (graph) {
             this._graph = graph;
             this._graph.elements.push(this);
         };
-
         Element.prototype.remove = function () {
             this.invalidate();
-
             for (var i = 0; i < this._connectors.length; i++) {
                 var connections = this._connectors[i].connections;
                 for (var j = 0; j < connections.length; j++) {
                     connections[j].remove();
                 }
             }
-
             if ((this._graph !== null) && (this._graph.elements.contains(this))) {
                 this._graph.elements.remove(this);
             }
-
             this._graph = null;
         };
-
         Element.prototype.hitTest = function (rectangle) {
             if ((rectangle.width === 0) && (rectangle.height === 0)) {
                 if (this._rectangle.contains(rectangle.topLeft)) {
                     return true;
                 }
-
                 if ((this._tracker !== null) && (this._tracker.track)) {
                     var h = this._tracker.hitTest(rectangle.topLeft);
                     if ((h.x >= -1) && (h.x <= +1) && (h.y >= -1) && (h.y <= +1)) {
                         return true;
                     }
                 }
-
                 for (var i = 0; i < this._connectors.length; i++) {
                     if (this._connectors[i].hitTest(rectangle)) {
                         return true;
                     }
                 }
-
                 return false;
             }
-
             return rectangle.contains(this._rectangle.topLeft);
         };
-
         Element.prototype.getCursor = function (point) {
             if (this._tracker !== null) {
                 var cursor = this._tracker.getCursor(point);
@@ -604,14 +540,11 @@ var Netron;
                     return cursor;
                 }
             }
-
             if (window.event.shiftKey) {
                 return Netron.Cursors.add;
             }
-
             return Netron.Cursors.select;
         };
-
         Element.prototype.getConnector = function (name) {
             for (var i = 0; i < this._connectors.length; i++) {
                 var connector = this._connectors[i];
@@ -621,7 +554,6 @@ var Netron;
             }
             return null;
         };
-
         Element.prototype.getConnectorPosition = function (connector) {
             var rectangle = this.rectangle;
             var point = connector.template.getConnectorPosition(this);
@@ -629,11 +561,9 @@ var Netron;
             point.y += rectangle.y;
             return point;
         };
-
         Element.prototype.setContent = function (content) {
             this._graph.setElementContent(this, content);
         };
-
         Object.defineProperty(Element.prototype, "content", {
             get: function () {
                 return this._content;
@@ -644,7 +574,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         return Element;
     })();
     Netron.Element = Element;
@@ -667,12 +596,9 @@ var Netron;
             this._canvas = element;
             this._canvas.focus();
             this._context = this._canvas.getContext("2d");
-
             this._theme = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#0c0" };
-
             this._isWebKit = typeof navigator.userAgent.split("WebKit/")[1] !== "undefined";
             this._isMozilla = navigator.appVersion.indexOf('Gecko/') >= 0 || ((navigator.userAgent.indexOf("Gecko") >= 0) && !this._isWebKit && (typeof navigator.appVersion !== "undefined"));
-
             this._mouseDownHandler = function (e) {
                 _this.mouseDown(e);
             };
@@ -703,7 +629,6 @@ var Netron;
             this._keyUpHandler = function (e) {
                 _this.keyUp(e);
             };
-
             this._canvas.addEventListener("mousedown", this._mouseDownHandler, false);
             this._canvas.addEventListener("mouseup", this._mouseUpHandler, false);
             this._canvas.addEventListener("mousemove", this._mouseMoveHandler, false);
@@ -731,7 +656,6 @@ var Netron;
                 this._context = null;
             }
         };
-
         Object.defineProperty(Graph.prototype, "theme", {
             get: function () {
                 return this._theme;
@@ -742,8 +666,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
-
         Object.defineProperty(Graph.prototype, "elements", {
             get: function () {
                 return this._elements;
@@ -751,26 +673,20 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Graph.prototype.addElement = function (template, point, content) {
             this._activeTemplate = template;
-
             var element = new Netron.Element(template, point);
             element.content = content;
             element.insertInto(this);
             element.invalidate();
             return element;
         };
-
         Graph.prototype.createElement = function (template) {
             this._activeTemplate = template;
-
             this._newElement = new Netron.Element(template, this._pointerPosition);
             this.update();
-
             this._canvas.focus();
         };
-
         Graph.prototype.addConnection = function (connector1, connector2) {
             var connection = new Netron.Connection(connector1, connector2);
             connector1.connections.push(connection);
@@ -780,17 +696,14 @@ var Netron;
             connection.invalidate();
             return connection;
         };
-
         Graph.prototype.setElementContent = function (element, content) {
             this._undoService.begin();
             this._undoService.add(new Netron.ContentChangedUndoUnit(element, content));
             this._undoService.commit();
             this.update();
         };
-
         Graph.prototype.deleteSelection = function () {
             this._undoService.begin();
-
             var deletedConnections = [];
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
@@ -805,32 +718,26 @@ var Netron;
                     }
                 }
             }
-
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
                 if (element.selected) {
                     this._undoService.add(new Netron.DeleteElementUndoUnit(element));
                 }
             }
-
             this._undoService.commit();
         };
-
         Graph.prototype.mouseDown = function (e) {
             e.preventDefault();
             this._canvas.focus();
             this.updateMousePosition(e);
-
             if (e.button === 0) {
                 // alt+click allows fast creation of element using the active template
                 if ((this._newElement === null) && (e.altKey)) {
                     this.createElement(this._activeTemplate);
                 }
-
                 this.pointerDown();
             }
         };
-
         Graph.prototype.mouseUp = function (e) {
             e.preventDefault();
             this.updateMousePosition(e);
@@ -838,20 +745,16 @@ var Netron;
                 this.pointerUp();
             }
         };
-
         Graph.prototype.mouseMove = function (e) {
             e.preventDefault();
             this.updateMousePosition(e);
             this.pointerMove();
         };
-
         Graph.prototype.doubleClick = function (e) {
             e.preventDefault();
             this.updateMousePosition(e);
-
             if (e.button === 0) {
                 var point = this._pointerPosition;
-
                 this.updateActiveObject(point);
                 if ((this._activeObject !== null) && (this._activeObject instanceof Netron.Element)) {
                     var element = this._activeObject;
@@ -862,7 +765,6 @@ var Netron;
                 }
             }
         };
-
         Graph.prototype.touchStart = function (e) {
             if (e.touches.length == 1) {
                 e.preventDefault();
@@ -870,12 +772,10 @@ var Netron;
                 this.pointerDown();
             }
         };
-
         Graph.prototype.touchEnd = function (e) {
             e.preventDefault();
             this.pointerUp();
         };
-
         Graph.prototype.touchMove = function (e) {
             if (e.touches.length == 1) {
                 e.preventDefault();
@@ -883,10 +783,8 @@ var Netron;
                 this.pointerMove();
             }
         };
-
         Graph.prototype.pointerDown = function () {
             var point = this._pointerPosition;
-
             if (this._newElement !== null) {
                 this._undoService.begin();
                 this._newElement.invalidate();
@@ -895,13 +793,15 @@ var Netron;
                 this._undoService.add(new Netron.InsertElementUndoUnit(this._newElement, this));
                 this._undoService.commit();
                 this._newElement = null;
-            } else {
+            }
+            else {
                 this._selection = null;
                 this.updateActiveObject(point);
                 if (this._activeObject === null) {
                     // start selection
                     this._selection = new Netron.Selection(point);
-                } else {
+                }
+                else {
                     // start connection
                     if ((this._activeObject instanceof Netron.Connector) && (!this._shiftKey)) {
                         var connector = this._activeObject;
@@ -910,7 +810,8 @@ var Netron;
                             this._newConnection.updateToPoint(point);
                             connector.invalidate();
                         }
-                    } else {
+                    }
+                    else {
                         // select object
                         var selectable = this._activeObject;
                         if (!selectable.selected) {
@@ -922,14 +823,14 @@ var Netron;
                             selectionUndoUnit.select(selectable);
                             this._undoService.add(selectionUndoUnit);
                             this._undoService.commit();
-                        } else if (this._shiftKey) {
+                        }
+                        else if (this._shiftKey) {
                             this._undoService.begin();
                             var deselectUndoUnit = new Netron.SelectionUndoUnit();
                             deselectUndoUnit.deselect(selectable);
                             this._undoService.add(deselectUndoUnit);
                             this._undoService.commit();
                         }
-
                         // start tracking
                         var hit = new Netron.Point(0, 0);
                         if (this._activeObject instanceof Netron.Element) {
@@ -942,19 +843,15 @@ var Netron;
                                 element.tracker.start(point, hit);
                             }
                         }
-
                         this._track = true;
                     }
                 }
             }
-
             this.update();
             this.updateMouseCursor();
         };
-
         Graph.prototype.pointerUp = function () {
             var point = this._pointerPosition;
-
             if (this._newConnection !== null) {
                 this.updateActiveObject(point);
                 this._newConnection.invalidate();
@@ -966,15 +863,11 @@ var Netron;
                         this._undoService.commit();
                     }
                 }
-
                 this._newConnection = null;
             }
-
             if (this._selection !== null) {
                 this._undoService.begin();
-
                 var selectionUndoUnit = new Netron.SelectionUndoUnit();
-
                 var rectangle = this._selection.rectangle;
                 var selectable = this._activeObject;
                 if ((this._activeObject === null) || (!selectable.selected)) {
@@ -982,16 +875,13 @@ var Netron;
                         this.deselectAll(selectionUndoUnit);
                     }
                 }
-
                 if ((rectangle.width !== 0) || (rectangle.height !== 0)) {
                     this.selectAll(selectionUndoUnit, rectangle);
                 }
-
                 this._undoService.add(selectionUndoUnit);
                 this._undoService.commit();
                 this._selection = null;
             }
-
             if (this._track) {
                 this._undoService.begin();
                 for (var i = 0; i < this._elements.length; i++) {
@@ -1006,26 +896,21 @@ var Netron;
                         }
                     }
                 }
-
                 this._undoService.commit();
                 this._track = false;
                 this.updateActiveObject(point);
             }
-
             this.update();
             this.updateMouseCursor();
         };
-
         Graph.prototype.pointerMove = function () {
             var point = this._pointerPosition;
-
             if (this._newElement !== null) {
                 // placing new element
                 this._newElement.invalidate();
                 this._newElement.rectangle = new Netron.Rectangle(point.x, point.y, this._newElement.rectangle.width, this._newElement.rectangle.height);
                 this._newElement.invalidate();
             }
-
             if (this._track) {
                 for (var i = 0; i < this._elements.length; i++) {
                     var element = this._elements[i];
@@ -1036,39 +921,80 @@ var Netron;
                     }
                 }
             }
-
             if (this._newConnection !== null) {
                 // connecting two connectors
                 this._newConnection.invalidate();
                 this._newConnection.updateToPoint(point);
                 this._newConnection.invalidate();
             }
-
             if (this._selection !== null) {
                 this._selection.updateCurrentPoint(point);
             }
-
             this.updateActiveObject(point);
             this.update();
             this.updateMouseCursor();
         };
-
         Graph.prototype.keyDown = function (e) {
             if (!this._isMozilla) {
                 this.processKey(e, e.keyCode);
             }
         };
-
         Graph.prototype.keyPress = function (e) {
             if (this._isMozilla) {
                 if (typeof this._keyCodeTable === "undefined") {
                     this._keyCodeTable = [];
                     var charCodeTable = {
-                        32: ' ', 48: '0', 49: '1', 50: '2', 51: '3', 52: '4', 53: '5', 54: '6', 55: '7', 56: '8', 57: '9', 59: ';', 61: '=',
-                        65: 'a', 66: 'b', 67: 'c', 68: 'd', 69: 'e', 70: 'f', 71: 'g', 72: 'h', 73: 'i', 74: 'j', 75: 'k', 76: 'l', 77: 'm', 78: 'n', 79: 'o', 80: 'p', 81: 'q', 82: 'r', 83: 's', 84: 't', 85: 'u', 86: 'v', 87: 'w', 88: 'x', 89: 'y', 90: 'z',
-                        107: '+', 109: '-', 110: '.', 188: ',', 190: '.', 191: '/', 192: '`', 219: '[', 220: '\\', 221: ']', 222: '\"'
+                        32: ' ',
+                        48: '0',
+                        49: '1',
+                        50: '2',
+                        51: '3',
+                        52: '4',
+                        53: '5',
+                        54: '6',
+                        55: '7',
+                        56: '8',
+                        57: '9',
+                        59: ';',
+                        61: '=',
+                        65: 'a',
+                        66: 'b',
+                        67: 'c',
+                        68: 'd',
+                        69: 'e',
+                        70: 'f',
+                        71: 'g',
+                        72: 'h',
+                        73: 'i',
+                        74: 'j',
+                        75: 'k',
+                        76: 'l',
+                        77: 'm',
+                        78: 'n',
+                        79: 'o',
+                        80: 'p',
+                        81: 'q',
+                        82: 'r',
+                        83: 's',
+                        84: 't',
+                        85: 'u',
+                        86: 'v',
+                        87: 'w',
+                        88: 'x',
+                        89: 'y',
+                        90: 'z',
+                        107: '+',
+                        109: '-',
+                        110: '.',
+                        188: ',',
+                        190: '.',
+                        191: '/',
+                        192: '`',
+                        219: '[',
+                        220: '\\',
+                        221: ']',
+                        222: '\"'
                     };
-
                     for (var keyCode in charCodeTable) {
                         var key = charCodeTable[keyCode];
                         this._keyCodeTable[key.charCodeAt(0)] = keyCode;
@@ -1077,15 +1003,12 @@ var Netron;
                         }
                     }
                 }
-
                 this.processKey(e, (this._keyCodeTable[e.charCode]) ? this._keyCodeTable[e.charCode] : e.keyCode);
             }
         };
-
         Graph.prototype.keyUp = function (e) {
             this.updateMouseCursor();
         };
-
         Graph.prototype.processKey = function (e, keyCode) {
             if ((e.ctrlKey || e.metaKey) && !e.altKey) {
                 if (keyCode == 65) {
@@ -1099,7 +1022,6 @@ var Netron;
                     this.updateMouseCursor();
                     this.stopEvent(e);
                 }
-
                 if ((keyCode == 90) && (!e.shiftKey)) {
                     this._undoService.undo();
                     this.update();
@@ -1107,7 +1029,6 @@ var Netron;
                     this.updateMouseCursor();
                     this.stopEvent(e);
                 }
-
                 if (((keyCode == 90) && (e.shiftKey)) || (keyCode == 89)) {
                     this._undoService.redo();
                     this.update();
@@ -1116,7 +1037,6 @@ var Netron;
                     this.stopEvent(e);
                 }
             }
-
             if ((keyCode == 46) || (keyCode == 8)) {
                 this.deleteSelection();
                 this.update();
@@ -1124,11 +1044,9 @@ var Netron;
                 this.updateMouseCursor();
                 this.stopEvent(e);
             }
-
             if (keyCode == 27) {
                 this._newElement = null;
                 this._newConnection = null;
-
                 this._track = false;
                 for (var i = 0; i < this._elements.length; i++) {
                     var element = this._elements[i];
@@ -1136,26 +1054,22 @@ var Netron;
                         element.tracker.stop();
                     }
                 }
-
                 this.update();
                 this.updateActiveObject(this._pointerPosition);
                 this.updateMouseCursor();
                 this.stopEvent(e);
             }
         };
-
         Graph.prototype.stopEvent = function (e) {
             e.preventDefault();
             e.stopPropagation();
         };
-
         Graph.prototype.selectAll = function (selectionUndoUnit, rectangle) {
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
                 if ((rectangle === null) || (element.hitTest(rectangle))) {
                     selectionUndoUnit.select(element);
                 }
-
                 for (var j = 0; j < element.connectors.length; j++) {
                     var connector = element.connectors[j];
                     for (var k = 0; k < connector.connections.length; k++) {
@@ -1167,12 +1081,10 @@ var Netron;
                 }
             }
         };
-
         Graph.prototype.deselectAll = function (selectionUndoUnit) {
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
                 selectionUndoUnit.deselect(element);
-
                 for (var j = 0; j < element.connectors.length; j++) {
                     var connector = element.connectors[j];
                     for (var k = 0; k < connector.connections.length; k++) {
@@ -1182,25 +1094,20 @@ var Netron;
                 }
             }
         };
-
         Graph.prototype.updateActiveObject = function (point) {
             var hitObject = this.hitTest(point);
             if (hitObject != this._activeObject) {
                 if (this._activeObject !== null) {
                     this._activeObject.hover = false;
                 }
-
                 this._activeObject = hitObject;
-
                 if (this._activeObject !== null) {
                     this._activeObject.hover = true;
                 }
             }
         };
-
         Graph.prototype.hitTest = function (point) {
             var rectangle = new Netron.Rectangle(point.x, point.y, 0, 0);
-
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
                 for (var j = 0; j < element.connectors.length; j++) {
@@ -1210,14 +1117,12 @@ var Netron;
                     }
                 }
             }
-
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
                 if (element.hitTest(rectangle)) {
                     return element;
                 }
             }
-
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
                 for (var j = 0; j < element.connectors.length; j++) {
@@ -1230,18 +1135,16 @@ var Netron;
                     }
                 }
             }
-
             return null;
         };
-
         Graph.prototype.updateMouseCursor = function () {
             if (this._newConnection !== null) {
                 this._canvas.style.cursor = ((this._activeObject !== null) && (this._activeObject instanceof Netron.Connector)) ? this._activeObject.getCursor(this._pointerPosition) : Netron.Cursors.cross;
-            } else {
+            }
+            else {
                 this._canvas.style.cursor = (this._activeObject !== null) ? this._activeObject.getCursor(this._pointerPosition) : Netron.Cursors.arrow;
             }
         };
-
         Graph.prototype.updateMousePosition = function (e) {
             this._shiftKey = e.shiftKey;
             this._pointerPosition = new Netron.Point(e.pageX, e.pageY);
@@ -1252,7 +1155,6 @@ var Netron;
                 node = node.offsetParent;
             }
         };
-
         Graph.prototype.updateTouchPosition = function (e) {
             this._shiftKey = false;
             this._pointerPosition = new Netron.Point(e.touches[0].pageX, e.touches[0].pageY);
@@ -1263,11 +1165,9 @@ var Netron;
                 node = node.offsetParent;
             }
         };
-
         Graph.prototype.update = function () {
             this._canvas.style.background = this.theme.background;
             this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-
             var connections = [];
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
@@ -1282,43 +1182,37 @@ var Netron;
                     }
                 }
             }
-
             for (var i = 0; i < this._elements.length; i++) {
                 this._context.save();
                 this._elements[i].paint(this._context);
                 this._context.restore();
             }
-
             for (var i = 0; i < this._elements.length; i++) {
                 var element = this._elements[i];
                 for (var j = 0; j < element.connectors.length; j++) {
                     var connector = element.connectors[j];
-
                     var hover = false;
                     for (var k = 0; k < connector.connections.length; k++) {
                         if (connector.connections[k].hover) {
                             hover = true;
                         }
                     }
-
                     if ((element.hover) || (connector.hover) || hover) {
                         connector.paint(this._context, (this._newConnection !== null) ? this._newConnection.from : null);
-                    } else if ((this._newConnection !== null) && (connector.isAssignable(this._newConnection.from))) {
+                    }
+                    else if ((this._newConnection !== null) && (connector.isAssignable(this._newConnection.from))) {
                         connector.paint(this._context, this._newConnection.from);
                     }
                 }
             }
-
             if (this._newElement !== null) {
                 this._context.save();
                 this._newElement.paint(this._context);
                 this._context.restore();
             }
-
             if (this._newConnection !== null) {
                 this._newConnection.paintTrack(this._context);
             }
-
             if (this._selection !== null) {
                 this._context.strokeStyle = this.theme.selection;
                 this._selection.paint(this._context);
@@ -1339,11 +1233,9 @@ var Netron;
         InsertConnectionUndoUnit.prototype.undo = function () {
             this._connection.remove();
         };
-
         InsertConnectionUndoUnit.prototype.redo = function () {
             this._connection.insert(this._from, this._to);
         };
-
         Object.defineProperty(InsertConnectionUndoUnit.prototype, "isEmpty", {
             get: function () {
                 return false;
@@ -1365,11 +1257,9 @@ var Netron;
         InsertElementUndoUnit.prototype.undo = function () {
             this._element.remove();
         };
-
         InsertElementUndoUnit.prototype.redo = function () {
             this._element.insertInto(this._graph);
         };
-
         Object.defineProperty(InsertElementUndoUnit.prototype, "isEmpty", {
             get: function () {
                 return false;
@@ -1388,26 +1278,26 @@ var Netron;
         }
         LineHelper.dashedLine = function (context, x1, y1, x2, y2) {
             context.moveTo(x1, y1);
-
             var dx = x2 - x1;
             var dy = y2 - y1;
-            var count = Math.floor(Math.sqrt(dx * dx + dy * dy) / 3);
+            var count = Math.floor(Math.sqrt(dx * dx + dy * dy) / 3); // dash length
             var ex = dx / count;
             var ey = dy / count;
-
             var q = 0;
             while (q++ < count) {
                 x1 += ex;
                 y1 += ey;
                 if (q % 2 === 0) {
                     context.moveTo(x1, y1);
-                } else {
+                }
+                else {
                     context.lineTo(x1, y1);
                 }
             }
             if (q % 2 === 0) {
                 context.moveTo(x2, y2);
-            } else {
+            }
+            else {
                 context.lineTo(x2, y2);
             }
         };
@@ -1438,14 +1328,12 @@ var Netron;
         Rectangle.prototype.contains = function (point) {
             return ((point.x >= this.x) && (point.x <= (this.x + this.width)) && (point.y >= this.y) && (point.y <= (this.y + this.height)));
         };
-
         Rectangle.prototype.inflate = function (dx, dy) {
             this.x -= dx;
             this.y -= dy;
             this.width += dx + dx + 1;
             this.height += dy + dy + 1;
         };
-
         Rectangle.prototype.union = function (rectangle) {
             var x1 = (this.x < rectangle.x) ? this.x : rectangle.x;
             var y1 = (this.y < rectangle.y) ? this.y : rectangle.y;
@@ -1453,7 +1341,6 @@ var Netron;
             var y2 = ((this.y + this.height) < (rectangle.y + rectangle.height)) ? (rectangle.y + rectangle.height) : (this.y + this.height);
             return new Rectangle(x1, y1, x2 - x1, y2 - y1);
         };
-
         Object.defineProperty(Rectangle.prototype, "topLeft", {
             get: function () {
                 return new Netron.Point(this.x, this.y);
@@ -1461,7 +1348,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Rectangle.prototype.clone = function () {
             return new Rectangle(this.x, this.y, this.width, this.height);
         };
@@ -1479,25 +1365,20 @@ var Netron;
         Object.defineProperty(Selection.prototype, "rectangle", {
             get: function () {
                 var rectangle = new Netron.Rectangle((this._startPoint.x <= this._currentPoint.x) ? this._startPoint.x : this._currentPoint.x, (this._startPoint.y <= this._currentPoint.y) ? this._startPoint.y : this._currentPoint.y, this._currentPoint.x - this._startPoint.x, this._currentPoint.y - this._startPoint.y);
-
                 if (rectangle.width < 0) {
                     rectangle.width *= -1;
                 }
-
                 if (rectangle.height < 0) {
                     rectangle.height *= -1;
                 }
-
                 return rectangle;
             },
             enumerable: true,
             configurable: true
         });
-
         Selection.prototype.updateCurrentPoint = function (currentPoint) {
             this._currentPoint = currentPoint;
         };
-
         Selection.prototype.paint = function (context) {
             var r = this.rectangle;
             context.lineWidth = 1;
@@ -1524,13 +1405,11 @@ var Netron;
                 this._states[i].value.selected = this._states[i].undo;
             }
         };
-
         SelectionUndoUnit.prototype.redo = function () {
             for (var i = 0; i < this._states.length; i++) {
                 this._states[i].value.selected = this._states[i].redo;
             }
         };
-
         Object.defineProperty(SelectionUndoUnit.prototype, "isEmpty", {
             get: function () {
                 for (var i = 0; i < this._states.length; i++) {
@@ -1543,15 +1422,12 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         SelectionUndoUnit.prototype.select = function (value) {
             this.update(value, value.selected, true);
         };
-
         SelectionUndoUnit.prototype.deselect = function (value) {
             this.update(value, value.selected, false);
         };
-
         SelectionUndoUnit.prototype.update = function (value, undo, redo) {
             for (var i = 0; i < this._states.length; i++) {
                 if (this._states[i].value == value) {
@@ -1559,7 +1435,6 @@ var Netron;
                     return;
                 }
             }
-
             this._states.push({ value: value, undo: undo, redo: redo });
         };
         return SelectionUndoUnit;
@@ -1581,7 +1456,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Tracker.prototype.hitTest = function (point) {
             // (0, 0) element, (-1, -1) top-left, (+1, +1) bottom-right
             if (this._resizable) {
@@ -1596,14 +1470,11 @@ var Netron;
                     }
                 }
             }
-
             if (this._rectangle.contains(point)) {
                 return new Netron.Point(0, 0);
             }
-
             return new Netron.Point(-2, -2);
         };
-
         Tracker.prototype.getGripRectangle = function (point) {
             var r = new Netron.Rectangle(0, 0, 7, 7);
             if (point.x < 0) {
@@ -1626,7 +1497,6 @@ var Netron;
             }
             return r;
         };
-
         Tracker.prototype.getCursor = function (point) {
             var hit = this.hitTest(point);
             if ((hit.x === 0) && (hit.y === 0)) {
@@ -1660,7 +1530,6 @@ var Netron;
             }
             return null;
         };
-
         Tracker.prototype.start = function (point, handle) {
             if ((handle.x >= -1) && (handle.x <= +1) && (handle.y >= -1) && (handle.y <= +1)) {
                 this._handle = handle;
@@ -1668,11 +1537,9 @@ var Netron;
                 this._track = true;
             }
         };
-
         Tracker.prototype.stop = function () {
             this._track = false;
         };
-
         Object.defineProperty(Tracker.prototype, "track", {
             get: function () {
                 return this._track;
@@ -1680,7 +1547,6 @@ var Netron;
             enumerable: true,
             configurable: true
         });
-
         Tracker.prototype.move = function (point) {
             var h = this._handle;
             var a = new Netron.Point(0, 0);
@@ -1709,11 +1575,9 @@ var Netron;
             this._rectangle.height = br.y - tl.y;
             this._currentPoint = point;
         };
-
         Tracker.prototype.updateRectangle = function (rectangle) {
             this._rectangle = rectangle.clone();
         };
-
         Tracker.prototype.paint = function (context) {
             if (this._resizable) {
                 for (var x = -1; x <= +1; x++) {
@@ -1745,11 +1609,9 @@ var Netron;
         TransformUndoUnit.prototype.undo = function () {
             this._element.rectangle = this._undoRectangle;
         };
-
         TransformUndoUnit.prototype.redo = function () {
             this._element.rectangle = this._redoRectangle;
         };
-
         Object.defineProperty(TransformUndoUnit.prototype, "isEmpty", {
             get: function () {
                 return false;
@@ -1772,11 +1634,9 @@ var Netron;
         UndoService.prototype.begin = function () {
             this._container = new Netron.ContainerUndoUnit();
         };
-
         UndoService.prototype.cancel = function () {
             this._container = null;
         };
-
         UndoService.prototype.commit = function () {
             if (!this._container.isEmpty) {
                 this._stack.splice(this._position, this._stack.length - this._position);
@@ -1785,18 +1645,15 @@ var Netron;
             }
             this._container = null;
         };
-
         UndoService.prototype.add = function (undoUnit) {
             this._container.add(undoUnit);
         };
-
         UndoService.prototype.undo = function () {
             if (this._position !== 0) {
                 this._position--;
                 this._stack[this._position].undo();
             }
         };
-
         UndoService.prototype.redo = function () {
             if ((this._stack.length !== 0) && (this._position < this._stack.length)) {
                 this._stack[this._position].redo();
