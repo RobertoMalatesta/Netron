@@ -227,7 +227,11 @@ var Netron;
             }
             if (connector instanceof Connector) {
                 var t2 = connector._template.type.split(' ');
-                if ((t1[0] != t2[0]) || (this._element == connector.element) || (t1.contains("[in]") && !t2.contains("[out]")) || (t1.contains("[out]") && !t2.contains("[in]")) || (!t2.contains("[array]") && (connector.connections.length == 1))) {
+                if ((t1[0] != t2[0]) ||
+                    (this._element == connector.element) ||
+                    (t1.contains("[in]") && !t2.contains("[out]")) ||
+                    (t1.contains("[out]") && !t2.contains("[in]")) ||
+                    (!t2.contains("[array]") && (connector.connections.length == 1))) {
                     return false;
                 }
             }
@@ -599,36 +603,16 @@ var Netron;
             this._theme = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#0c0" };
             this._isWebKit = typeof navigator.userAgent.split("WebKit/")[1] !== "undefined";
             this._isMozilla = navigator.appVersion.indexOf('Gecko/') >= 0 || ((navigator.userAgent.indexOf("Gecko") >= 0) && !this._isWebKit && (typeof navigator.appVersion !== "undefined"));
-            this._mouseDownHandler = function (e) {
-                _this.mouseDown(e);
-            };
-            this._mouseUpHandler = function (e) {
-                _this.mouseUp(e);
-            };
-            this._mouseMoveHandler = function (e) {
-                _this.mouseMove(e);
-            };
-            this._doubleClickHandler = function (e) {
-                _this.doubleClick(e);
-            };
-            this._touchStartHandler = function (e) {
-                _this.touchStart(e);
-            };
-            this._touchEndHandler = function (e) {
-                _this.touchEnd(e);
-            };
-            this._touchMoveHandler = function (e) {
-                _this.touchMove(e);
-            };
-            this._keyDownHandler = function (e) {
-                _this.keyDown(e);
-            };
-            this._keyPressHandler = function (e) {
-                _this.keyPress(e);
-            };
-            this._keyUpHandler = function (e) {
-                _this.keyUp(e);
-            };
+            this._mouseDownHandler = function (e) { _this.mouseDown(e); };
+            this._mouseUpHandler = function (e) { _this.mouseUp(e); };
+            this._mouseMoveHandler = function (e) { _this.mouseMove(e); };
+            this._doubleClickHandler = function (e) { _this.doubleClick(e); };
+            this._touchStartHandler = function (e) { _this.touchStart(e); };
+            this._touchEndHandler = function (e) { _this.touchEnd(e); };
+            this._touchMoveHandler = function (e) { _this.touchMove(e); };
+            this._keyDownHandler = function (e) { _this.keyDown(e); };
+            this._keyPressHandler = function (e) { _this.keyPress(e); };
+            this._keyUpHandler = function (e) { _this.keyUp(e); };
             this._canvas.addEventListener("mousedown", this._mouseDownHandler, false);
             this._canvas.addEventListener("mouseup", this._mouseUpHandler, false);
             this._canvas.addEventListener("mousemove", this._mouseMoveHandler, false);
@@ -912,6 +896,7 @@ var Netron;
                 this._newElement.invalidate();
             }
             if (this._track) {
+                // moving selected elements
                 for (var i = 0; i < this._elements.length; i++) {
                     var element = this._elements[i];
                     if (element.tracker !== null) {
@@ -944,56 +929,9 @@ var Netron;
                 if (typeof this._keyCodeTable === "undefined") {
                     this._keyCodeTable = [];
                     var charCodeTable = {
-                        32: ' ',
-                        48: '0',
-                        49: '1',
-                        50: '2',
-                        51: '3',
-                        52: '4',
-                        53: '5',
-                        54: '6',
-                        55: '7',
-                        56: '8',
-                        57: '9',
-                        59: ';',
-                        61: '=',
-                        65: 'a',
-                        66: 'b',
-                        67: 'c',
-                        68: 'd',
-                        69: 'e',
-                        70: 'f',
-                        71: 'g',
-                        72: 'h',
-                        73: 'i',
-                        74: 'j',
-                        75: 'k',
-                        76: 'l',
-                        77: 'm',
-                        78: 'n',
-                        79: 'o',
-                        80: 'p',
-                        81: 'q',
-                        82: 'r',
-                        83: 's',
-                        84: 't',
-                        85: 'u',
-                        86: 'v',
-                        87: 'w',
-                        88: 'x',
-                        89: 'y',
-                        90: 'z',
-                        107: '+',
-                        109: '-',
-                        110: '.',
-                        188: ',',
-                        190: '.',
-                        191: '/',
-                        192: '`',
-                        219: '[',
-                        220: '\\',
-                        221: ']',
-                        222: '\"'
+                        32: ' ', 48: '0', 49: '1', 50: '2', 51: '3', 52: '4', 53: '5', 54: '6', 55: '7', 56: '8', 57: '9', 59: ';', 61: '=',
+                        65: 'a', 66: 'b', 67: 'c', 68: 'd', 69: 'e', 70: 'f', 71: 'g', 72: 'h', 73: 'i', 74: 'j', 75: 'k', 76: 'l', 77: 'm', 78: 'n', 79: 'o', 80: 'p', 81: 'q', 82: 'r', 83: 's', 84: 't', 85: 'u', 86: 'v', 87: 'w', 88: 'x', 89: 'y', 90: 'z',
+                        107: '+', 109: '-', 110: '.', 188: ',', 190: '.', 191: '/', 192: '`', 219: '[', 220: '\\', 221: ']', 222: '\"'
                     };
                     for (var keyCode in charCodeTable) {
                         var key = charCodeTable[keyCode];
