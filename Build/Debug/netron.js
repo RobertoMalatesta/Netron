@@ -598,8 +598,11 @@ var Netron;
             this._selection = null;
             this._track = false;
             this._canvas = element;
+            this._canvas.width = this._canvas.clientWidth * this.devicePixelRatio;
+            this._canvas.height = this._canvas.clientHeight * this.devicePixelRatio;
             this._canvas.focus();
             this._context = this._canvas.getContext("2d");
+            this._context.scale(this.devicePixelRatio, this.devicePixelRatio);
             this._theme = { background: "#fff", connection: "#000", selection: "#000", connector: "#31456b", connectorBorder: "#fff", connectorHoverBorder: "#000", connectorHover: "#0c0" };
             this._isWebKit = typeof navigator.userAgent.split("WebKit/")[1] !== "undefined";
             this._isMozilla = navigator.appVersion.indexOf('Gecko/') >= 0 || ((navigator.userAgent.indexOf("Gecko") >= 0) && !this._isWebKit && (typeof navigator.appVersion !== "undefined"));
@@ -710,6 +713,13 @@ var Netron;
             }
             this._undoService.commit();
         };
+        Object.defineProperty(Graph.prototype, "devicePixelRatio", {
+            get: function () {
+                return (('devicePixelRatio' in window) && (window.devicePixelRatio > 1)) ? window.devicePixelRatio : 1;
+            },
+            enumerable: true,
+            configurable: true
+        });
         Graph.prototype.mouseDown = function (e) {
             e.preventDefault();
             this._canvas.focus();
